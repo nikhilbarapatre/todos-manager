@@ -12,7 +12,7 @@ module.exports = {
       .then(todo => res.status(201).send(todo))
       .catch(error => res.status(400).send(error));
   },
-  
+
   //List a todo...
   list(req, res) {
     return Todo
