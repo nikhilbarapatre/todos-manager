@@ -1,23 +1,27 @@
 import React, { Component } from "react";
 import axios from "axios";
-import TodoItem from "./todoItems";
+//import TodoItem from "./todoItems";
 const todosUrl = "/api/todos";
 
 class Todo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      todoList: []
+      todoList: [],
+      todoId: ""
     };
-    this.createTodoList = this.createTodoList.bind(this);
+    this.createTodo = this.createTodo.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.deleteTodoList = this.deleteTodoList.bind(this);
+    this.deleteTodo = this.deleteTodo.bind(this);
   }
 
   componentDidMount() {
+    const body = {
+      title: "new"
+    };
     axios
-      .get(todosUrl)
-      .then(res => this.setState({ todoList: res.data }))
+      .post(todosUrl + "/", body)
+      .then(res => this.setState({ todoId: res.data.id }))
       .catch(err => console.log(err));
   }
 
@@ -25,25 +29,27 @@ class Todo extends Component {
     this.setState({ text: e.target.value });
   }
 
-  createTodoList(e) {
+  createTodo(e) {
     //This function is used to create a new todo.
     e.preventDefault();
-    console.log("todo = " + this.state.text);
     const body = {
-      title: this.state.text
+      content: this.state.text,
+      complete: false,
+      todoId: this.state.todoId
     };
+
     axios
-      .post(todosUrl, body)
+      .post(todosUrl + "/" + this.state.todoId + "/items", body)
       .then(res =>
         this.setState({ todoList: this.state.todoList.concat(res.data) })
       )
       .catch(err => console.log(err));
   }
 
-  deleteTodoList(id) {
+  deleteTodo(id) {
     //This function is used to delete a todo.
     axios
-      .delete(todosUrl + "/" + id)
+      .delete(todosUrl + "/" + this.state.todoId + "/items/" + id)
       .then()
       .catch(err => console.log(err));
 
@@ -54,17 +60,11 @@ class Todo extends Component {
     });
   }
 
-  updateTodoList(todo) {
-    //This function is used to update a todo.
-    console.log("Here id = " + todo.id);
-    axios.put(todosUrl);
-  }
-
   render() {
     return (
       <div>
         <div>
-          <form onSubmit={this.createTodoList}>
+          <form onSubmit={this.createTodo}>
             <p>Add new todo</p>
             <input onChange={this.handleChange} placeholder="Todo Name" />
             <button type="submit">Add</button>
@@ -73,12 +73,11 @@ class Todo extends Component {
         <ul>
           {this.state.todoList.map(todos => (
             <li key={todos.id}>
-              <a href="">{todos.title}</a>
-              <button onClick={this.deleteTodoList.bind(this, todos.id)}>
+              {todos.content}
+              <button onClick={this.deleteTodo.bind(this, todos.id)}>
                 Delete
               </button>
-              <button onClick={this.updateTodoList.bind(this)}>Check</button>
-              {<TodoItem current={todos.todoItems} />}
+              {/* {<TodoItem current={todos} />} */}
               <p />
             </li>
           ))}
