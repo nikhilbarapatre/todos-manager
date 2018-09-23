@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-//import TodoItem from "./todoItems";
+import "../bootstrap.css";
 const todosUrl = "/api/todos";
 
 class Todo extends Component {
@@ -13,6 +13,7 @@ class Todo extends Component {
     this.createTodo = this.createTodo.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.deleteTodo = this.deleteTodo.bind(this);
+    this.updateTodo = this.updateTodo.bind(this);
   }
 
   componentDidMount() {
@@ -60,28 +61,61 @@ class Todo extends Component {
     });
   }
 
+  updateTodo(id) {
+    //This function is used to update a todo.
+    axios
+      .put(todosUrl + "/" + this.state.todoId + "/items/" + id, {
+        complete: true
+      })
+      .then()
+      .catch(err => console.log(err));
+  }
+
   render() {
     return (
       <div>
-        <div>
-          <form onSubmit={this.createTodo}>
-            <p>Add new todo</p>
-            <input onChange={this.handleChange} placeholder="Todo Name" />
-            <button type="submit">Add</button>
-          </form>
-        </div>
-        <ul>
-          {this.state.todoList.map(todos => (
-            <li key={todos.id}>
-              {todos.content}
-              <button onClick={this.deleteTodo.bind(this, todos.id)}>
-                Delete
+        <div className="row">
+          <div className="container">
+            <h1 className="text-center">Create todo </h1>
+            <form className="form-inline" onSubmit={this.createTodo}>
+              <input
+                className="form-control col-11"
+                onChange={this.handleChange}
+                placeholder="Todo Name"
+              />
+              <button className="btn btn-primary col-1" type="submit">
+                Add
               </button>
-              {/* {<TodoItem current={todos} />} */}
-              <p />
-            </li>
-          ))}
-        </ul>
+            </form>
+          </div>
+        </div>
+        <div className="container">
+          <table className="table table-striped">
+            <tbody>
+              {this.state.todoList.map(todos => (
+                <tr>
+                  <td key={todos.id}>{todos.content}</td>
+                  <td>
+                    <button
+                      className="btn btn-outline-success"
+                      onClick={this.updateTodo.bind(this, todos.id)}
+                    >
+                      Done
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={this.deleteTodo.bind(this, todos.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
