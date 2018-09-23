@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import TodoItem from "./todoItems";
 const todosUrl = "/api/todos";
 
 class Todo extends Component {
@@ -25,7 +26,7 @@ class Todo extends Component {
   }
 
   createTodoList(e) {
-    //This function is used to create a new todo list.
+    //This function is used to create a new todo.
     e.preventDefault();
     console.log("todo = " + this.state.text);
     const body = {
@@ -40,7 +41,7 @@ class Todo extends Component {
   }
 
   deleteTodoList(id) {
-    //This function is used to delete a todo list.
+    //This function is used to delete a todo.
     axios
       .delete(todosUrl + "/" + id)
       .then()
@@ -53,6 +54,12 @@ class Todo extends Component {
     });
   }
 
+  updateTodoList(todo) {
+    //This function is used to update a todo.
+    console.log("Here id = " + todo.id);
+    axios.put(todosUrl);
+  }
+
   render() {
     return (
       <div>
@@ -60,16 +67,18 @@ class Todo extends Component {
           <form onSubmit={this.createTodoList}>
             <p>Add new todo</p>
             <input onChange={this.handleChange} placeholder="Todo Name" />
-            <button type="submit">Submit</button>
+            <button type="submit">Add</button>
           </form>
         </div>
         <ul>
-          {this.state.todoList.map(todoList => (
-            <li key={todoList.id}>
-              {todoList.title}
-              <button onClick={this.deleteTodoList.bind(this, todoList.id)}>
+          {this.state.todoList.map(todos => (
+            <li key={todos.id}>
+              <a href="">{todos.title}</a>
+              <button onClick={this.deleteTodoList.bind(this, todos.id)}>
                 Delete
               </button>
+              <button onClick={this.updateTodoList.bind(this)}>Check</button>
+              {<TodoItem current={todos.todoItems} />}
               <p />
             </li>
           ))}
